@@ -1,0 +1,35 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+url = 'https://www.104.com.tw/jobs/search/?jobsource=2018indexpoc&ro=0'
+headers = {
+    "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36"
+}
+
+n = 30
+for i in range(0,n):
+    res = requests.get(url,headers=headers)
+    soup = BeautifulSoup(res.text,'html.parser')
+
+    jobSoupList = soup.select('h2[class="b-tit"]')
+
+    for jobSoup in jobSoupList:
+        try:
+            job = jobSoup.select('a')[0].text
+            joburl = 'https:' + jobSoup.select('a')[0]['href']
+            
+            
+            resArticle = requests.get(joburl,headers=headers)
+            soupArticle = BeautifulSoup(resArticle.text,'html.parser')
+
+            jobCompanyNameList = soupArticle.select('title')[0].text.split('｜')[1]
+
+
+    
+#             print(job)
+#             print(joburl)
+#             print(jobCompanyNameList)
+#             print('==========')
+        except IndexError as e:
+            print(e)
